@@ -1,5 +1,8 @@
 package dev.java10x.animesearchia.Model;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class AnimeMapper {
 
     public AnimeModel map(AnimeDTO animeDTO){
