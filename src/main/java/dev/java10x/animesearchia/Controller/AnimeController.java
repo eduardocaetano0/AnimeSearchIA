@@ -50,7 +50,7 @@ public class AnimeController {
     }
 
     //delete
-    @DeleteMapping("/deletar")
+    @DeleteMapping("/deletar/{id}")
     public ResponseEntity<?> deletarAnimePorId(@PathVariable Long id) {
         if(animeService.listarPorId(id) != null){
             animeService.removerAnimePorId(id);
