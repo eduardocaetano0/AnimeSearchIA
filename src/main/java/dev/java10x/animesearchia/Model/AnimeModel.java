@@ -1,6 +1,6 @@
 package dev.java10x.animesearchia.Model;
 
-import dev.java10x.animesearchia.Model.Enum.Generos;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -16,23 +16,16 @@ public class AnimeModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true)
     private String titulo;
     private String sinopse;
-    private Generos Animegeneros;
     private Integer numeroEpisodios;
     private Integer numeroTemporadas;
     private LocalDate dataLancamento;
     private String classificacaoIndicativa;
     private String urlImagemCapa;
 
-
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
 
     public Long getId() {
         return id;
@@ -42,20 +35,20 @@ public class AnimeModel {
         this.id = id;
     }
 
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
     public String getSinopse() {
         return sinopse;
     }
 
     public void setSinopse(String sinopse) {
         this.sinopse = sinopse;
-    }
-
-    public Generos getAnimegeneros() {
-        return Animegeneros;
-    }
-
-    public void setAnimegeneros(Generos animegeneros) {
-        Animegeneros = animegeneros;
     }
 
     public Integer getNumeroEpisodios() {
