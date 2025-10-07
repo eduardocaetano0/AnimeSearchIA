@@ -8,29 +8,27 @@ public class AnimeMapper {
     public AnimeModel map(AnimeDTO animeDTO){
         AnimeModel anime = new AnimeModel();
 
-        anime.setId(anime.getId());
-        anime.setTitulo(anime.getTitulo());
-        anime.setSinopse(anime.getSinopse());
-        anime.setNumeroEpisodios(anime.getNumeroEpisodios());
-        anime.setNumeroTemporadas(anime.getNumeroTemporadas());
-        anime.setAnimegeneros(anime.getAnimegeneros());
-        anime.setClassificacaoIndicativa(anime.getClassificacaoIndicativa());
-        anime.setUrlImagemCapa(anime.getUrlImagemCapa());
-        anime.setDataLancamento(anime.getDataLancamento());
+        anime.setId(animeDTO.getId());
+        anime.setTitulo(animeDTO.getTitulo());
+        anime.setSinopse(animeDTO.getSinopse());
+        anime.setNumeroEpisodios(animeDTO.getNumeroEpisodios());
+        anime.setNumeroTemporadas(animeDTO.getNumeroTemporadas());
+        anime.setClassificacaoIndicativa(animeDTO.getClassificacaoIndicativa());
+        anime.setUrlImagemCapa(animeDTO.getUrlImagemCapa());
+        anime.setDataLancamento(animeDTO.getDataLancamento());
         return anime;
     }
     public AnimeDTO map(AnimeModel anime){
         AnimeDTO dto = new AnimeDTO();
 
-        dto.setId(dto.getId());
-        dto.setTitulo(dto.getTitulo());
-        dto.setSinopse(dto.getSinopse());
-        dto.setNumeroEpisodios(dto.getNumeroEpisodios());
-        dto.setNumeroTemporadas(dto.getNumeroTemporadas());
-        dto.setAnimegeneros(dto.getAnimegeneros());
-        dto.setClassificacaoIndicativa(dto.getClassificacaoIndicativa());
-        dto.setUrlImagemCapa(dto.getUrlImagemCapa());
-        dto.setDataLancamento(dto.getDataLancamento());
+        dto.setId(anime.getId());
+        dto.setTitulo(anime.getTitulo());
+        dto.setSinopse(anime.getSinopse());
+        dto.setNumeroEpisodios(anime.getNumeroEpisodios());
+        dto.setNumeroTemporadas(anime.getNumeroTemporadas());
+        dto.setClassificacaoIndicativa(anime.getClassificacaoIndicativa());
+        dto.setUrlImagemCapa(anime.getUrlImagemCapa());
+        dto.setDataLancamento(anime.getDataLancamento());
 
         return dto;
     }
