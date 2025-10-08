@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>AnimeSearchIA</title>
+    <style>
+        :root { --bg-color: #282c34; --card-color: #3c4049; --text-color: #f0f0f0; --header-color: #21252b; --border-color: #555; --accent-color: #2a9d8f; --disabled-color: #888; }
+        body { font-family: sans-serif; margin: 0; background-color: var(--bg-color); color: var(--text-color); }
+        h1 { text-align: center; padding: 20px; background-color: var(--header-color); color: white; margin: 0; }
+        .main-container { display: flex; gap: 20px; padding: 20px; }
+        .column { background-color: var(--card-color); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .left-column { flex: 40%; }
+        .right-column { flex: 60%; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid var(--border-color); padding: 10px; text-align: left; }
+        th { background-color: #333740; }
+        button { padding: 12px; cursor: pointer; background-color: var(--accent-color); color: white; border: none; font-size: 16px; border-radius: 5px; transition: background-color 0.2s; }
+        button:hover { background-color: #268a7e; }
+        button:disabled { background-color: var(--disabled-color); cursor: not-allowed; }
+        #suggestion-result { min-height: 400px; white-space: pre-wrap; background-color: var(--header-color); padding: 15px; border-radius: 5px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card-header h2 { margin: 0; border: none; }
+        #add-anime-button { width: auto; margin-top: 0; font-size: 14px; padding: 8px 16px; }
+        #suggest-button { width: 100%; margin-top: 20px; }
+        input, textarea { width: 100%; padding: 10px; box-sizing: border-box; margin-bottom: 10px; background-color: #555; color: var(--text-color); border: 1px solid #777; border-radius: 4px; }
+        .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); }
+        .modal-content { background-color: var(--card-color); margin: 10% auto; padding: 20px; border: 1px solid var(--border-color); width: 80%; max-width: 500px; border-radius: 8px; position: relative; z-index: 2; }
+        .close-button { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<h1>Sugestor de Anime</h1>
+
+<div class="main-container">
+    <div class="column left-column">
+        <div class="card-header">
+            <h2>Animes Salvos</h2>
+            <button id="add-anime-button">Adicionar novo anime</button>
+        </div>
+        <table id="anime-table">
+            <thead>
+            <tr><th>Título</th><th>Episódios</th><th>Temporadas</th></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button id="suggest-button">Sugerir Animes</button>
+    </div>
+    <div class="column right-column">
+        <h2>Suas sugestões:</h2>
+        <div id="suggestion-result">Aguardando sugestões...</div>
+    </div>
+</div>
+
+<div id="add-anime-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>Adicionar Novo Anime</h2>
+        <form id="add-form">
+            <input type="text" name="titulo" placeholder="Título" required><br>
+            <textarea name="sinopse" placeholder="Sinopse"></textarea><br>
+            <input type="number" name="numeroEpisodios" placeholder="Nº de Episódios"><br>
+            <input type="number" name="numeroTemporadas" placeholder="Nº de Temporadas"><br>
+            <input type="date" name="dataLancamento"><br>
+            <input type="text" name="classificacaoIndicativa" placeholder="Classificação"><br>
+            <input type="text" name="urlImagemCapa" placeholder="URL da Imagem"><br>
+            <button type="submit">Salvar Anime</button>
+        </form>
+        <div id="response-message" style="color: green; margin-top: 10px;"></div>
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById('add-anime-modal');
+    const openModalBtn = document.getElementById('add-anime-button');
+    const closeModalSpan = document.querySelector('.close-button');
+    const addForm = document.getElementById('add-form');
+    const responseMessageDiv = document.getElementById('response-message');
+    const suggestButton = document.getElementById('suggest-button');
+    const suggestionResultDiv = document.getElementById('suggestion-result');
+    const animeTableBody = document.querySelector("#anime-table tbody");
+
+    openModalBtn.onclick = function() { modal.style.display = "block"; }
+    closeModalSpan.onclick = function() { modal.style.display = "none"; }
+    window.onclick = function(event) { if (event.target == modal) { modal.style.display = "none"; } }
+
+    function carregarAnimes() {
+        fetch('http://localhost:8080/anime/listar').then(response => response.json()).then(data => {
+            animeTableBody.innerHTML = '';
+            data.forEach(anime => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${anime.titulo}</td><td>${anime.numeroEpisodios}</td><td>${anime.numeroTemporadas}</td>`;
+                animeTableBody.appendChild(tr);
+            });
+        }).catch(error => console.error('Erro ao buscar animes:', error));
+    }
+
+    addForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(addForm);
+        const animeData = Object.fromEntries(formData.entries());
+        fetch('http://localhost:8080/anime/adiciona', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(animeData),
+        }).then(response => {
+            if (response.ok) {
+                responseMessageDiv.textContent = 'Anime adicionado com sucesso!';
+                addForm.reset();
+                carregarAnimes();
+                setTimeout(() => { modal.style.display = "none"; responseMessageDiv.textContent = ''; }, 1500);
+            } else { throw new Error('Falha ao adicionar.'); }
+        }).catch(error => { responseMessageDiv.textContent = 'Erro ao adicionar.'; });
+    });
+
+    // O BLOCO DE CÓDIGO QUE VOCÊ PEDIU FOI COLOCADO AQUI
+    suggestButton.addEventListener('click', function() {
+        suggestionResultDiv.innerHTML = 'O especialista está pensando...';
+        suggestButton.disabled = true;
+
+        fetch('http://localhost:8080/search')
+            .then(response => {
+                if (response.ok) { return response.text(); }
+                else { throw new Error('Falha ao buscar sugestões.'); }
+            })
+            .then(data => {
+                suggestionResultDiv.innerHTML = data;
+            })
+            .catch(error => {
+                console.error('Erro na busca:', error);
+                suggestionResultDiv.textContent = 'Erro ao buscar sugestões. Verifique o console.';
+            })
+            .finally(() => {
+                suggestButton.disabled = false; // Reabilita o botão
+            });
+    });
+
+    window.onload = carregarAnimes;
+</script>
+</body>
+</html>
