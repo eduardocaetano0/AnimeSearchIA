@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/anime")
+@CrossOrigin(origins = "*")
 public class AnimeController {
     private final AnimeService animeService;
 
